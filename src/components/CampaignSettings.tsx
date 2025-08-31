@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useStore } from "../store/store";
 import { CampaignConfig } from "../store/store";
 import info from "../config/info.json";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 const CampaignSettings: React.FC = () => {
   const { campaign, setCampaign } = useStore();
@@ -44,13 +46,13 @@ const CampaignSettings: React.FC = () => {
               ⓘ
             </span>
           </label>
-          <input
+          <Input
             type="text"
             name="campaignName"
             value={formState.campaignName}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1"
           />
         </div>
         <div>
@@ -60,13 +62,13 @@ const CampaignSettings: React.FC = () => {
               ⓘ
             </span>
           </label>
-          <input
+          <Input
             type="text"
             name="baseDomain"
             value={formState.baseDomain}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1"
           />
         </div>
         <div>
@@ -76,13 +78,13 @@ const CampaignSettings: React.FC = () => {
               ⓘ
             </span>
           </label>
-          <input
+          <Input
             type="text"
             name="tag"
             value={formState.tag || ""}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1"
           />
         </div>
         <div>
@@ -94,12 +96,11 @@ const CampaignSettings: React.FC = () => {
           </label>
           {formState.descriptions.map((desc, index) => (
             <div key={index} className="mt-2">
-              <input
-                type="text"
+              <Textarea
                 value={desc}
                 onChange={(e) => handleDescriptionChange(index, e.target.value)}
                 maxLength={90}
-                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="block w-full"
                 placeholder={`Description ${index + 1}`}
               />
             </div>

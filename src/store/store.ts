@@ -35,7 +35,6 @@ export interface AdGroupConfig {
   path2?: string;
   adsCount: number;
   utilityHeadlines: HeadlineItem[];
-  allocateUtilityCount: number;
   customHeadlines: string[]; // New property for custom headlines
 }
 

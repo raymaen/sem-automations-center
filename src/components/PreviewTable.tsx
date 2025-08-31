@@ -3,29 +3,36 @@ import React from "react";
 import { useStore } from "../store/store";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import info from "../config/info.json";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./ui/table";
 
 const PreviewTable: React.FC = () => {
   const { campaign, adGroups, banks } = useStore();
 
+  // Updated generatePreview to calculate final URL by combining domain and ad group URL
   const generatePreview = () => {
     return adGroups.flatMap((group) => {
       const ads = Array.from({ length: group.adsCount }, (_, adIndex) => {
-        const headlines = Object.values(banks)
-          .flatMap((bank) =>
-            bank.map((item) => {
-              const variants = item.text.split(";").map((variant) => variant.trim());
-              // Rotate variants across ads in the ad group
-              return variants[adIndex % variants.length] || "";
-            })
-          )
-          .slice(0, 15); // Limit to 15 headlines
+        const bankHeadlines = Object.values(banks).flatMap((bank) =>
+          bank.map((item) => {
+            const variants = item.text.split(";").map((variant) => variant.trim());
+            return variants[adIndex % variants.length] || "";
+          })
+        );
+
+        const adGroupHeadlines = group.customHeadlines || [];
+
+        // Combine and prioritize ad group headlines over bank headlines
+        const headlines = [...adGroupHeadlines, ...bankHeadlines].slice(0, 15); // Limit to 15 headlines
 
         const descriptions = (campaign.descriptions || []).slice(0, 4); // Add fallback for descriptions
+
+        // Calculate final URL by combining domain and ad group URL
+        const finalUrl = `${campaign.baseDomain}/${group.finalUrl}`;
 
         return {
           campaign: campaign.name,
           adGroup: `${group.name} - Ad ${adIndex + 1}`,
-          finalUrl: group.finalUrl,
+          finalUrl,
           path1: group.path1 || "",
           path2: group.path2 || "",
           headlines,
@@ -45,31 +52,27 @@ const PreviewTable: React.FC = () => {
       {previewRows.length === 0 ? (
         <p className="text-gray-500">No preview available. Add ad groups and headlines to see the preview.</p>
       ) : (
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="border border-gray-300 px-4 py-2">Campaign</th>
-              <th className="border border-gray-300 px-4 py-2">Ad Group</th>
-              <th className="border border-gray-300 px-4 py-2">Final URL</th>
-              <th className="border border-gray-300 px-4 py-2">Path 1</th>
-              <th className="border border-gray-300 px-4 py-2">Path 2</th>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Campaign</TableHead>
+              <TableHead>Ad Group</TableHead>
+              <TableHead>Final URL</TableHead>
+              <TableHead>Path 1</TableHead>
+              <TableHead>Path 2</TableHead>
               {Array.from({ length: 15 }, (_, i) => (
-                <th key={i} className="border border-gray-300 px-4 py-2">
-                  Headline {i + 1}
-                </th>
+                <TableHead key={i}>Headline {i + 1}</TableHead>
               ))}
               {Array.from({ length: 4 }, (_, i) => (
-                <th key={i} className="border border-gray-300 px-4 py-2">
-                  Description {i + 1}
-                </th>
+                <TableHead key={i}>Description {i + 1}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {previewRows.map((row, index) => (
-              <tr key={index}>
-                <td className="border border-gray-300 px-4 py-2">{row.campaign}</td>
-                <td className="border border-gray-300 px-4 py-2">
+              <TableRow key={index}>
+                <TableCell>{row.campaign}</TableCell>
+                <TableCell>
                   {row.adGroup}
                   <Tooltip>
                     <TooltipTrigger>
@@ -77,8 +80,8 @@ const PreviewTable: React.FC = () => {
                     </TooltipTrigger>
                     <TooltipContent>{info.adGroups.name}</TooltipContent>
                   </Tooltip>
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
+                </TableCell>
+                <TableCell>
                   {row.finalUrl}
                   <Tooltip>
                     <TooltipTrigger>
@@ -86,23 +89,19 @@ const PreviewTable: React.FC = () => {
                     </TooltipTrigger>
                     <TooltipContent>{info.adGroups.finalUrl}</TooltipContent>
                   </Tooltip>
-                </td>
-                <td className="border border-gray-300 px-4 py-2">{row.path1}</td>
-                <td className="border border-gray-300 px-4 py-2">{row.path2}</td>
+                </TableCell>
+                <TableCell>{row.path1}</TableCell>
+                <TableCell>{row.path2}</TableCell>
                 {row.headlines.map((headline, i) => (
-                  <td key={i} className="border border-gray-300 px-4 py-2">
-                    {headline}
-                  </td>
+                  <TableCell key={i}>{headline}</TableCell>
                 ))}
                 {row.descriptions.map((description, i) => (
-                  <td key={i} className="border border-gray-300 px-4 py-2">
-                    {description}
-                  </td>
+                  <TableCell key={i}>{description}</TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       )}
     </section>
   );
