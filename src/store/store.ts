@@ -17,6 +17,7 @@ export interface HeadlineItem {
   variants: HeadlineVariant[];
   pinned?: boolean;
   notes?: string;
+  maxLength?: number; // Added maxLength property
 }
 
 export interface CampaignConfig {
@@ -24,7 +25,10 @@ export interface CampaignConfig {
   baseDomain: string;
   tag: string; // Ensure tag is always a string
   name: string; // Add name property
-  descriptions: string[]; // Add descriptions property
+  description1: string; // Add description1 property
+  description2: string; // Add description2 property
+  description3: string; // Add description3 property
+  description4: string; // Add description4 property
 }
 
 export interface AdGroupConfig {
@@ -49,12 +53,84 @@ export interface Store {
   removeAdGroup: (id: string) => void;
   exportData: () => string;
 }
+// Short descriptions + examples for each headline bank (Home Security)
+export const categoryDescriptions: Record<HeadlineCategory, { desc: string; examples: string[] }> = {
+  benefit: {
+    desc: "Highlight the homeowner's safety and peace of mind.",
+    examples: [
+      "Protect Your Family Today",
+      "Peace of Mind Guaranteed",
+      "Stop Break-Ins Before They Happen",
+      "24/7 Safety for Loved Ones",
+      "Rest Easy, You’re Protected",
+    ],
+  },
+  offer: {
+    desc: "Call out your deal or limited-time offer.",
+    examples: [
+      "Free Install This Month",
+      "From $19.99/Month",
+      "Zero Upfront Costs",
+      "Limited-Time Security Deal",
+      "Exclusive Online Discount",
+    ],
+  },
+  feature: {
+    desc: "Showcase unique system features or capabilities.",
+    examples: [
+      "Smartphone App Control",
+      "HD Video Monitoring",
+      "Wireless Alarm Systems",
+      "Smart Locks & Sensors",
+      "Easy DIY Installation",
+    ],
+  },
+  trust: {
+    desc: "Build credibility and trust signals.",
+    examples: [
+      "Trusted by 1M+ Families",
+      "Top Rated Security Service",
+      "UL-Certified Monitoring",
+      "Backed by 5-Star Reviews",
+      "Licensed & Insured Experts",
+    ],
+  },
+  cta: {
+    desc: "Strong call to action to drive sign-ups.",
+    examples: [
+      "Get a Free Quote Now",
+      "Call for Same-Day Install",
+      "Secure Your Home Today",
+      "Schedule Free Inspection",
+      "Compare Top Systems Now",
+    ],
+  },
+  utility: {
+    desc: "Flexible fillers or utility headlines.",
+    examples: [
+      "24/7 Monitoring Service",
+      "Nationwide Coverage",
+      "Fast Local Installation",
+      "Custom Plans for Every Home",
+      "Works with Alexa & Google",
+    ],
+  },
+};
 
 // Zustand Store
 export const useStore = create<Store>()(
   persist<Store>(
     (set, get) => ({
-      campaign: { campaignName: "", baseDomain: "", tag: "", name: "", descriptions: [] },
+      campaign: {
+        campaignName: "",
+        baseDomain: "",
+        tag: "",
+        name: "",
+        description1: "",
+        description2: "",
+        description3: "",
+        description4: "",
+      },
       banks: {
         benefit: [],
         offer: [],

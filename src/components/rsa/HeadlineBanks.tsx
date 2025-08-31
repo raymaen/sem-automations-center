@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useStore } from "../../store/store";
+import { categoryDescriptions, useStore } from "../../store/store";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -13,21 +13,52 @@ const HeadlineBanks: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<HeadlineCategory | null>(null);
   const [newHeadline, setNewHeadline] = useState<string>("");
 
+  const handleSaveCategory = (category: HeadlineCategory) => {
+    const filteredHeadlines = banks[category].filter((headline) => headline.text.trim().length > 0);
+    setBank(category, filteredHeadlines);
+    setEditingCategory(null);
+  };
+
+  const calculateMaxLength = (text: string) => {
+    const semicolonCount = (text.match(/;/g) || []).length;
+    return 30 + semicolonCount * 31;
+  };
+
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     category: HeadlineCategory,
     headlineId: string
   ) => {
-    const updatedHeadlines = banks[category].map((headline: HeadlineItem) =>
-      headline.id === headlineId ? { ...headline, text: e.target.value } : headline
-    );
+    const updatedHeadlines = banks[category].map((headline: HeadlineItem) => {
+      if (headline.id === headlineId) {
+        const updatedText = e.target.value;
+        const maxLength = calculateMaxLength(updatedText);
+        return {
+          ...headline,
+          text: updatedText.slice(0, maxLength),
+          maxLength,
+        };
+      }
+      return headline;
+    });
     setBank(category, updatedHeadlines);
+  };
+
+  const isOverLimit = (headline: HeadlineItem) => {
+    return headline.text.length > (headline.maxLength || calculateMaxLength(headline.text));
   };
 
   const handleAddHeadline = (category: HeadlineCategory) => {
     if (!newHeadline.trim()) return;
 
-    const updatedHeadlines = [...banks[category], { id: uuidv4(), category, text: newHeadline.trim(), variants: [] }];
+    const updatedHeadlines = [
+      ...banks[category],
+      ...newHeadline
+        .split(";")
+        .map((headline) => headline.trim())
+        .filter((headline) => headline.length > 0)
+        .map((headline) => ({ id: uuidv4(), category, text: headline, variants: [] })),
+    ];
     setBank(category, updatedHeadlines);
     setNewHeadline("");
   };
@@ -43,8 +74,17 @@ const HeadlineBanks: React.FC = () => {
             </TabsTrigger>
           ))}
         </TabsList>
+
         {(Object.keys(banks) as HeadlineCategory[]).map((category) => (
           <TabsContent key={category} value={category}>
+            {/* Category Description */}
+            <div className="mb-4 p-4 bg-gray-100 rounded border border-gray-300">
+              <p className="text-sm text-gray-700 font-medium">{categoryDescriptions[category]?.desc}</p>
+              <p className="text-xs text-gray-500 mt-2">
+                <span className="font-semibold">Examples:</span> {categoryDescriptions[category]?.examples.join(" • ")}
+              </p>
+            </div>
+
             {editingCategory === category ? (
               <div className="space-y-4">
                 {banks[category].map((headline: HeadlineItem) => (
@@ -52,12 +92,19 @@ const HeadlineBanks: React.FC = () => {
                     <Input
                       value={headline.text}
                       onChange={(e) => handleInputChange(e, category, headline.id)}
-                      className={headline.text.length > 30 ? "border-red-500" : ""}
-                      aria-invalid={headline.text.length > 30 ? "true" : "false"}
+                      className={isOverLimit(headline) ? "border-red-500" : ""}
+                      aria-invalid={isOverLimit(headline) ? "true" : "false"}
                     />
-                    {headline.text.length > 30 && <span className="text-red-500 text-sm">Exceeds 30 characters</span>}
+                    <span
+                      className={`text-xs px-2 py-1 rounded ${
+                        isOverLimit(headline) ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {headline.text.length}/{headline.maxLength || calculateMaxLength(headline.text)}
+                    </span>
                   </div>
                 ))}
+
                 <div className="flex items-center gap-2 mt-4">
                   <Input
                     value={newHeadline}
@@ -66,19 +113,29 @@ const HeadlineBanks: React.FC = () => {
                   />
                   <Button onClick={() => handleAddHeadline(category)}>Add</Button>
                 </div>
-                <Button onClick={() => setEditingCategory(null)} className="mt-4">
+                <Button onClick={() => handleSaveCategory(category)} className="mt-4">
                   Save
                 </Button>
               </div>
             ) : (
-              <ul className="list-disc pl-5 space-y-2">
+              // View mode with nicer cards
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {banks[category].map((headline: HeadlineItem) => (
-                  <li key={headline.id} className={headline.text.length > 30 ? "text-red-500" : ""}>
-                    {headline.text}
-                  </li>
+                  <div
+                    key={headline.id}
+                    className={`p-3 rounded border shadow-sm flex justify-between items-center ${
+                      isOverLimit(headline) ? "border-red-400 bg-red-50" : "border-gray-200"
+                    }`}
+                  >
+                    <span>{headline.text}</span>
+                    <span className="text-xs text-gray-500">
+                      {headline.text.length}/{headline.maxLength || calculateMaxLength(headline.text)}
+                    </span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
+
             {editingCategory !== category && (
               <Button onClick={() => setEditingCategory(category)} className="mt-4">
                 Edit

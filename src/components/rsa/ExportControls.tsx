@@ -5,9 +5,10 @@ import { useStore } from "../../store/store";
 import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
 import { Button } from "../ui/button";
 import info from "../../config/info.json";
+import { buildRSATable } from "../../utils/build-rsa-table";
 
 const ExportControls: React.FC = () => {
-  const { campaign, adGroups, banks, exportData } = useStore();
+  const { campaign, adGroups, banks } = useStore();
 
   const handleExport = () => {
     if (adGroups.length === 0) {
@@ -15,18 +16,15 @@ const ExportControls: React.FC = () => {
       return;
     }
 
-    const rows = adGroups.map((group) => {
-      const headlines = banks.benefit
-        .slice(0, 15) // Limit to 15 headlines
-        .map((item) => item.variants[0]?.text || "");
-
-      return {
-        Campaign: campaign.campaignName,
-        "Ad Group": group.name,
-        "Final URL": group.finalUrl,
-        Headlines: headlines.join(", "),
-      };
-    });
+    const rows = buildRSATable({ campaign, adGroups, banks }).map((row) => ({
+      Campaign: row.campaign,
+      "Ad Group": row.adGroup,
+      "Final URL": row.finalUrl,
+      "Path 1": row.path1,
+      "Path 2": row.path2,
+      ...row.headlines.reduce((acc, headline, i) => ({ ...acc, [`Headline ${i + 1}`]: headline }), {}),
+      ...row.descriptions.reduce((acc, description, i) => ({ ...acc, [`Description ${i + 1}`]: description }), {}),
+    }));
 
     const csvContent = [Object.keys(rows[0]).join(","), ...rows.map((row) => Object.values(row).join(","))].join("\n");
 
@@ -43,10 +41,12 @@ const ExportControls: React.FC = () => {
       <h2 className="text-xl font-semibold mb-4">Export Controls</h2>
       <div className="flex items-center">
         <Tooltip>
-          <TooltipTrigger>
-            <Button onClick={handleExport} className="mr-2">
-              Export CSV
-            </Button>
+          <TooltipTrigger asChild>
+            <div>
+              <Button onClick={handleExport} className="mr-2">
+                Export CSV
+              </Button>
+            </div>
           </TooltipTrigger>
           <TooltipContent>{info.exportControls.export}</TooltipContent>
         </Tooltip>

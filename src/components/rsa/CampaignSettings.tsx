@@ -1,38 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useStore } from "../../store/store";
-import { CampaignConfig } from "../../store/store";
-import info from "../../config/info.json";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
 const CampaignSettings: React.FC = () => {
   const { campaign, setCampaign } = useStore();
-  const [formState, setFormState] = useState<CampaignConfig & { descriptions: string[] }>({
-    ...campaign,
-    descriptions: ["", "", "", ""],
-  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormState((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleDescriptionChange = (index: number, value: string) => {
-    const updatedDescriptions = [...formState.descriptions];
-    updatedDescriptions[index] = value;
-    setFormState((prev) => ({ ...prev, descriptions: updatedDescriptions }));
-  };
-
-  const handleBlur = () => {
-    setCampaign({
-      campaignName: formState.campaignName,
-      baseDomain: formState.baseDomain,
-      tag: formState.tag,
-      name: formState.name || "", // Ensure name is set
-      descriptions: formState.descriptions, // Use current descriptions
-    });
+    setCampaign({ ...campaign, [name]: value });
   };
 
   return (
@@ -40,71 +18,98 @@ const CampaignSettings: React.FC = () => {
       <h2 className="text-xl font-semibold mb-4">Campaign Settings</h2>
       <form className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Campaign Name
-            <span className="ml-2 text-gray-400 cursor-pointer" title={info.campaign.campaignName}>
-              ⓘ
-            </span>
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Campaign Name</label>
           <Input
             type="text"
             name="campaignName"
-            value={formState.campaignName}
+            value={campaign.campaignName}
             onChange={handleChange}
-            onBlur={handleBlur}
             className="mt-1"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Base Domain
-            <span className="ml-2 text-gray-400 cursor-pointer" title={info.campaign.baseDomain}>
-              ⓘ
-            </span>
-          </label>
-          <Input
-            type="text"
-            name="baseDomain"
-            value={formState.baseDomain}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className="mt-1"
-          />
+          <label className="block text-sm font-medium text-gray-700">Base Domain</label>
+          <Input type="text" name="baseDomain" value={campaign.baseDomain} onChange={handleChange} className="mt-1" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Tag (Optional)
-            <span className="ml-2 text-gray-400 cursor-pointer" title={info.campaign.tag}>
-              ⓘ
-            </span>
-          </label>
-          <Input
-            type="text"
-            name="tag"
-            value={formState.tag || ""}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className="mt-1"
-          />
+          <label className="block text-sm font-medium text-gray-700">Tag (Optional)</label>
+          <Input type="text" name="tag" value={campaign.tag} onChange={handleChange} className="mt-1" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Descriptions (90 chars max)
-            <span className="ml-2 text-gray-400 cursor-pointer" title={info.campaign.descriptions}>
-              ⓘ
+          <label className="block text-sm font-medium text-gray-700">Description 1</label>
+          <div className="relative">
+            <Textarea
+              name="description1"
+              value={campaign.description1}
+              onChange={handleChange}
+              maxLength={90}
+              className="block w-full mt-1"
+            />
+            <span
+              className={`absolute bottom-1 right-2 text-xs px-2 py-1 rounded ${
+                campaign.description1.length > 90 ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {campaign.description1.length}/90
             </span>
-          </label>
-          {formState.descriptions.map((desc, index) => (
-            <div key={index} className="mt-2">
-              <Textarea
-                value={desc}
-                onChange={(e) => handleDescriptionChange(index, e.target.value)}
-                maxLength={90}
-                className="block w-full"
-                placeholder={`Description ${index + 1}`}
-              />
-            </div>
-          ))}
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description 2</label>
+          <div className="relative">
+            <Textarea
+              name="description2"
+              value={campaign.description2}
+              onChange={handleChange}
+              maxLength={90}
+              className="block w-full mt-1"
+            />
+            <span
+              className={`absolute bottom-1 right-2 text-xs px-2 py-1 rounded ${
+                campaign.description2.length > 90 ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {campaign.description2.length}/90
+            </span>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description 3</label>
+          <div className="relative">
+            <Textarea
+              name="description3"
+              value={campaign.description3}
+              onChange={handleChange}
+              maxLength={90}
+              className="block w-full mt-1"
+            />
+            <span
+              className={`absolute bottom-1 right-2 text-xs px-2 py-1 rounded ${
+                campaign.description3.length > 90 ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {campaign.description3.length}/90
+            </span>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description 4</label>
+          <div className="relative">
+            <Textarea
+              name="description4"
+              value={campaign.description4}
+              onChange={handleChange}
+              maxLength={90}
+              className="block w-full mt-1"
+            />
+            <span
+              className={`absolute bottom-1 right-2 text-xs px-2 py-1 rounded ${
+                campaign.description4.length > 90 ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {campaign.description4.length}/90
+            </span>
+          </div>
         </div>
       </form>
     </section>

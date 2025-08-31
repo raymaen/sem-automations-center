@@ -32,6 +32,11 @@ const AdGroups: React.FC = () => {
     setNewGroup({ ...newGroup, [field]: e.target.value });
   };
 
+  const calculateMaxLength = (text: string) => {
+    const semicolonCount = (text.match(/;/g) || []).length;
+    return 30 + semicolonCount * 31;
+  };
+
   const handleEditInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: keyof AdGroupConfig,
@@ -39,8 +44,28 @@ const AdGroups: React.FC = () => {
   ) => {
     const updatedGroup = adGroups.find((group) => group.id === groupId);
     if (updatedGroup) {
-      updateAdGroup(groupId, { [field]: e.target.value });
+      if (field === "customHeadlines") {
+        const updatedHeadlines = e.target.value
+          .split(";")
+          .map((headline) => headline.trim())
+          .filter((headline) => headline.length > 0)
+          .map((headline) => headline.slice(0, calculateMaxLength(headline)));
+        updateAdGroup(groupId, { customHeadlines: updatedHeadlines });
+      } else {
+        updateAdGroup(groupId, { [field]: e.target.value });
+      }
     }
+  };
+
+  const handleSaveGroup = (groupId: string) => {
+    const group = adGroups.find((g) => g.id === groupId);
+    if (group) {
+      const filteredHeadlines = group.customHeadlines
+        .map((headline) => headline.trim())
+        .filter((headline) => headline.length > 0);
+      updateAdGroup(groupId, { customHeadlines: filteredHeadlines });
+    }
+    setEditingGroupId(null);
   };
 
   const handleAddGroup = () => {
@@ -107,8 +132,18 @@ const AdGroups: React.FC = () => {
                             updatedHeadlines[index] = e.target.value;
                             updateAdGroup(group.id, { customHeadlines: updatedHeadlines });
                           }}
-                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          className={headline.length > calculateMaxLength(headline) ? "border-red-500" : ""}
+                          aria-invalid={headline.length > calculateMaxLength(headline) ? "true" : "false"}
                         />
+                        <span
+                          className={`text-xs px-2 py-1 rounded ${
+                            headline.length > calculateMaxLength(headline)
+                              ? "bg-red-100 text-red-600"
+                              : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {headline.length}/{calculateMaxLength(headline)}
+                        </span>
                         <Button
                           variant="destructive"
                           onClick={() => {
@@ -126,7 +161,7 @@ const AdGroups: React.FC = () => {
                       placeholder="Add new headline"
                       value={newGroup.newHeadline || ""}
                       onChange={(e) => setNewGroup({ ...newGroup, newHeadline: e.target.value })}
-                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full mb-2"
                     />
                     <Button
                       onClick={() => {
@@ -141,7 +176,7 @@ const AdGroups: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                <Button onClick={() => setEditingGroupId(null)} className="mt-4">
+                <Button onClick={() => handleSaveGroup(group.id)} className="mt-4">
                   Save
                 </Button>
               </div>
@@ -151,17 +186,23 @@ const AdGroups: React.FC = () => {
                 <p className="text-sm text-gray-600 mb-2">Final URL: {group.finalUrl}</p>
                 <div className="border rounded p-4 bg-gray-100">
                   <h4 className="text-sm font-medium text-gray-700 mb-2">Custom Headlines</h4>
-                  <ul className="list-disc list-inside space-y-1">
-                    {Array.isArray(group.customHeadlines) && group.customHeadlines.length > 0 ? (
-                      group.customHeadlines.map((headline, index) => (
-                        <li key={index} className="text-sm text-gray-800">
-                          {headline}
-                        </li>
-                      ))
-                    ) : (
-                      <li className="text-sm text-gray-500">No custom headlines</li>
-                    )}
-                  </ul>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {group.customHeadlines.map((headline, index) => (
+                      <div
+                        key={index}
+                        className={`p-3 rounded border shadow-sm flex justify-between items-center ${
+                          headline.length > calculateMaxLength(headline)
+                            ? "border-red-400 bg-red-50"
+                            : "border-gray-200"
+                        }`}
+                      >
+                        <span>{headline}</span>
+                        <span className="text-xs text-gray-500">
+                          {headline.length}/{calculateMaxLength(headline)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className="mt-4 flex gap-2">
                   <Button onClick={() => setEditingGroupId(group.id)}>Edit</Button>
@@ -208,6 +249,44 @@ const AdGroups: React.FC = () => {
           onChange={(e) => handleInputChange(e, "finalUrl")}
           className="block w-full mb-2"
         />
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700">Path 1</label>
+          <div className="relative">
+            <Input
+              type="text"
+              value={newGroup.path1}
+              onChange={(e) => handleInputChange(e, "path1")}
+              maxLength={15}
+              className="block w-full mt-1"
+            />
+            <span
+              className={`absolute bottom-1 right-2 text-xs px-2 py-1 rounded ${
+                (newGroup.path1 || "").length > 15 ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {(newGroup.path1 || "").length}/15
+            </span>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700">Path 2</label>
+          <div className="relative">
+            <Input
+              type="text"
+              value={newGroup.path2}
+              onChange={(e) => handleInputChange(e, "path2")}
+              maxLength={15}
+              className="block w-full mt-1"
+            />
+            <span
+              className={`absolute bottom-1 right-2 text-xs px-2 py-1 rounded ${
+                (newGroup.path2 || "").length > 15 ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {(newGroup.path2 || "").length}/15
+            </span>
+          </div>
+        </div>
         <label className="block text-sm font-medium text-gray-700">
           Custom Headlines
           <Tooltip>
