@@ -1,0 +1,27 @@
+{
+  "campaign": {
+    "campaignName": "The name of your campaign.",
+    "baseDomain": "The base domain for your ads.",
+    "tag": "Optional tag for categorization.",
+    "descriptions": "Short descriptions for your campaign (90 characters max)."
+  },
+  "adGroups": {
+    "name": "The name of the ad group.",
+    "finalUrl": "The final URL for the ad group.",
+    "path1": "Optional path for the URL.",
+    "path2": "Optional second path for the URL.",
+    "adsCount": "The number of ads in this group.",
+    "allocateUtilityCount": "Number of utility headlines allocated."
+  },
+  "headlines": {
+    "benefit": "Headlines that highlight the benefits of your product.",
+    "offer": "Headlines that showcase special offers or discounts.",
+    "feature": "Headlines that describe key features of your product.",
+    "trust": "Headlines that build trust, such as testimonials or guarantees.",
+    "cta": "Call-to-action headlines that encourage user action.",
+    "utility": "Headlines that provide utility, such as tips or advice."
+  },
+  "exportControls": {
+    "export": "Click to export your data as a CSV file."
+  }
+}
