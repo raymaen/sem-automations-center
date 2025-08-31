@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { useStore } from "../store/store";
-import { AdGroupConfig } from "../store/store";
+import { useStore } from "../../store/store";
+import { AdGroupConfig } from "../../store/store";
 import { v4 as uuidv4 } from "uuid";
-import info from "../config/info.json";
-import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
-import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import info from "../../config/info.json";
+import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 const AdGroups: React.FC = () => {
   const { adGroups, addAdGroup, updateAdGroup, removeAdGroup } = useStore();

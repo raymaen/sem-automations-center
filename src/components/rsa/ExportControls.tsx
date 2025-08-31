@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useStore } from "../store/store";
-import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
-import { Button } from "./ui/button";
-import info from "../config/info.json";
+import { useStore } from "../../store/store";
+import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
+import { Button } from "../ui/button";
+import info from "../../config/info.json";
 
 const ExportControls: React.FC = () => {
   const { campaign, adGroups, banks, exportData } = useStore();

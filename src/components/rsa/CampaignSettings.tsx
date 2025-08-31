@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { useStore } from "../store/store";
-import { CampaignConfig } from "../store/store";
-import info from "../config/info.json";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
+import { useStore } from "../../store/store";
+import { CampaignConfig } from "../../store/store";
+import info from "../../config/info.json";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 
 const CampaignSettings: React.FC = () => {
   const { campaign, setCampaign } = useStore();

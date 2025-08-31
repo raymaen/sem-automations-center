@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { useStore } from "../store/store";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { HeadlineCategory, HeadlineItem } from "../store/store";
+import { useStore } from "../../store/store";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { HeadlineCategory, HeadlineItem } from "../../store/store";
 import { v4 as uuidv4 } from "uuid";
 
 const HeadlineBanks: React.FC = () => {

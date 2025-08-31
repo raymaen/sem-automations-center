@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
-import { useStore } from "../store/store";
-import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
-import info from "../config/info.json";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./ui/table";
+import { useStore } from "../../store/store";
+import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
+import info from "../../config/info.json";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../ui/table";
 
 const PreviewTable: React.FC = () => {
   const { campaign, adGroups, banks } = useStore();
