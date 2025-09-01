@@ -1,12 +1,75 @@
 "use client";
 
 import React, { useState } from "react";
-import { categoryDescriptions, useStore } from "../../store/store";
+import { useStore } from "../../store/store";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { HeadlineCategory, HeadlineItem } from "../../store/store";
 import { v4 as uuidv4 } from "uuid";
+
+const categoryDescriptions: Record<HeadlineCategory, { desc: string; examples: string[] }> = {
+  benefit: {
+    desc: "Highlight the homeowner's safety and peace of mind.",
+    examples: [
+      "Protect Your Family Today",
+      "Peace of Mind Guaranteed",
+      "Stop Break-Ins Before They Happen",
+      "24/7 Safety for Loved Ones",
+      "Rest Easy, You’re Protected",
+    ],
+  },
+  offer: {
+    desc: "Call out your deal or limited-time offer.",
+    examples: [
+      "Free Install This Month",
+      "From $19.99/Month",
+      "Zero Upfront Costs",
+      "Limited-Time Security Deal",
+      "Exclusive Online Discount",
+    ],
+  },
+  feature: {
+    desc: "Showcase unique system features or capabilities.",
+    examples: [
+      "Smartphone App Control",
+      "HD Video Monitoring",
+      "Wireless Alarm Systems",
+      "Smart Locks & Sensors",
+      "Easy DIY Installation",
+    ],
+  },
+  trust: {
+    desc: "Build credibility and trust signals.",
+    examples: [
+      "Trusted by 1M+ Families",
+      "Top Rated Security Service",
+      "UL-Certified Monitoring",
+      "Backed by 5-Star Reviews",
+      "Licensed & Insured Experts",
+    ],
+  },
+  cta: {
+    desc: "Strong call to action to drive sign-ups.",
+    examples: [
+      "Get a Free Quote Now",
+      "Call for Same-Day Install",
+      "Secure Your Home Today",
+      "Schedule Free Inspection",
+      "Compare Top Systems Now",
+    ],
+  },
+  utility: {
+    desc: "Flexible fillers or utility headlines.",
+    examples: [
+      "24/7 Monitoring Service",
+      "Nationwide Coverage",
+      "Fast Local Installation",
+      "Custom Plans for Every Home",
+      "Works with Alexa & Google",
+    ],
+  },
+};
 
 const HeadlineBanks: React.FC = () => {
   const { banks, setBank } = useStore();
